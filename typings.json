@@ -1,0 +1,11 @@
+{
+  "name": "lightweight-twitch-gui",
+  "globalDependencies": {
+    "Q": "github:DefinitelyTyped/DefinitelyTyped/q/Q.d.ts#a6732bf1c03fd285bb01641b3a5a0129147cdb5b",
+    "any": "file:custom-typings/any.d.ts",
+    "gulp": "github:DefinitelyTyped/DefinitelyTyped/gulp/gulp.d.ts#a6732bf1c03fd285bb01641b3a5a0129147cdb5b",
+    "lodash": "github:DefinitelyTyped/DefinitelyTyped/lodash/lodash.d.ts#3191f6e0088eee07c4d8fd24e4d27a40a60d9eb9",
+    "node": "github:DefinitelyTyped/DefinitelyTyped/node/node.d.ts#a6732bf1c03fd285bb01641b3a5a0129147cdb5b",
+    "orchestrator": "github:DefinitelyTyped/DefinitelyTyped/orchestrator/orchestrator.d.ts#a6732bf1c03fd285bb01641b3a5a0129147cdb5b"
+  }
+}
