@@ -1,16 +1,16 @@
 import * as ReactDOM from 'react-dom'
 import * as React from 'react'
-import {TwitchAPI} from 'twitch/api'
-import {FollowedStreams} from 'stream/followed-streams'
-import {StreamSearch} from 'stream/search'
-import {TopStreams} from 'stream/top-streams'
-import {Settings} from 'stream/settings'
-import {Log} from 'util/log'
 import {Tabs, Tab} from "react-bootstrap"
-import {ConfigStore} from 'stream/config-store'
 import {authenticate} from 'authenticator'
 import '../vendor/css/bootstrap.min.css'
 import '../css/loading.css'
+import {TwitchAPI} from "./core/twitch/twitch-api";
+import {ConfigStore} from "./core/config-store";
+import {FollowedStreams} from "./component/stream/followed-streams-component";
+import {TopStreams} from "./component/stream/top-streams-component";
+import {StreamSearch} from "./component/stream/stream-search-component";
+import {Settings} from "./component/settings/settings-component";
+import {Log} from "./core/log";
 
 
 class Application extends React.Component<{}, {}> {

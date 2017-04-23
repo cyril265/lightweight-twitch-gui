@@ -1,7 +1,7 @@
 import * as React from 'react';
-import {AppConfig} from 'app-config'
 import {FormControl, FormGroup, Label, Checkbox, ControlLabel} from "react-bootstrap"
-import {ConfigStore} from 'stream/config-store'
+import {AppConfig} from "core/app-config";
+import {ConfigStore} from "core/config-store";
 
 
 interface State {

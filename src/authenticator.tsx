@@ -1,5 +1,4 @@
-import {ConfigStore} from 'stream/config-store'
-
+import {ConfigStore} from "./core/config-store";
 let electron = require('electron')
 let BrowserWindow = electron.BrowserWindow
 

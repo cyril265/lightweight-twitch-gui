@@ -1,5 +1,4 @@
-import {ConfigStore} from 'stream/config-store'
-
+import {ConfigStore} from "./config-store";
 const remote = require('electron').remote
 const process = remote.require('child_process');
 const os = remote.require('os');
