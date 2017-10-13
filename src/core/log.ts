@@ -9,6 +9,8 @@ export module Log {
     const logFile = path.resolve(os.homedir(), '.lightstreamer', 'lightstreamer.log');
 
     export function overrideLog() {
+        fs.unlinkSync(logFile)
+
         const oldLog = console.log;
         console.log = function (message, optionalParams) {
             if (optionalParams) oldLog(message, optionalParams); else oldLog(message)

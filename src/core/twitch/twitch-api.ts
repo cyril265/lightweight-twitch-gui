@@ -14,7 +14,7 @@ export class TwitchAPI {
         this.checkResponse(response)
 
         let data = await response.json()
-        return data.streams;
+        return this.filterPlaylistStreams(data.streams);
     }
 
     async getTopStreams(limit: number = 50): Promise<Stream[]> {
@@ -22,7 +22,7 @@ export class TwitchAPI {
         this.checkResponse(response)
 
         let data = await response.json()
-        return data.streams;
+        return this.filterPlaylistStreams(data.streams);
     }
 
     async getTopStreamsByGame(game: string, limit: number = 50): Promise<Stream[]> {
@@ -30,7 +30,7 @@ export class TwitchAPI {
         this.checkResponse(response)
 
         let data = await response.json()
-        return data.streams;
+        return this.filterPlaylistStreams(data.streams);
     }
 
     async searchStreams(query: string, limit: number = 100): Promise<Stream[]> {
@@ -38,7 +38,11 @@ export class TwitchAPI {
         this.checkResponse(response)
 
         let data = await response.json()
-        return data.streams;
+        return this.filterPlaylistStreams(data.streams);
+    }
+
+    private async filterPlaylistStreams(streams: Stream[]): Promise<Stream[]> {
+        return streams.filter(stream => !stream.is_playlist);
     }
 
     async getTopGames(limit: number = 50): Promise<Game[]> {

@@ -46,6 +46,7 @@ export interface Channel {
 export interface Stream {
     _id: number;
     game: string;
+    is_playlist: boolean;
     viewers: number;
     created_at: string;
     video_height: number;
