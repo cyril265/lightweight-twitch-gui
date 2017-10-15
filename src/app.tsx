@@ -19,7 +19,7 @@ class Application extends React.Component<{}, {}> {
 
     constructor() {
         super()
-        Log.overrideLog();
+       // Log.overrideLog();
         let config = ConfigStore.getCurrentConfig();
         this.api = new TwitchAPI(config.authToken, config.clientId);
 

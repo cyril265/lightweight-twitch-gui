@@ -4,15 +4,16 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "package": "electron-packager . lightstreamer --platform=win32 --arch=x64 --version=1.4.16 --prune --out=.. icon=img/app-icon.ico --overwrite --ignore=\"(node_modules|src|vendor|typings)\"",
-    "run": "electron main.js"
+    "watch": "webpack --watch",
+    "start": "electron main.js",
+    "postinstall": "typings install"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "css-loader": "^0.28.0",
-    "electron": "^1.4.3",
+    "electron": "^1.7.9",
     "electron-packager": "^8.1.0",
     "file-loader": "^0.11.1",
     "style-loader": "^0.16.1",
