@@ -4,7 +4,8 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "package": "electron-packager . lightstreamer --platform=win32 --arch=x64 --version=1.4.16 --prune --out=.. icon=img/app-icon.ico --overwrite --ignore=\"(node_modules|src|vendor|typings)\"",
+    "package": "webpack && electron-packager . lightstreamer --platform=win32 --arch=x64 --version=1.4.16 --prune --out=.. icon=img/app-icon.ico --overwrite --ignore=\"(node_modules|src|vendor|typings)\"",
+    "build": "webpack",
     "watch": "webpack --watch",
     "start": "electron main.js",
     "postinstall": "typings install"
@@ -23,7 +24,7 @@
     "webpack": "^2.4.1"
   },
   "dependencies": {
-    "@types/isomorphic-fetch": "0.0.33",
+    "@types/isomorphic-fetch": "0.0.34",
     "@types/react": "^15.0.21",
     "@types/react-dom": "^15.0.21",
     "lodash": "^4.16.4",

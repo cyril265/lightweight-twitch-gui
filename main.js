@@ -1,7 +1,6 @@
 //process.env.NODE_ENV = 'production';
 
 var electron = require('electron')
-console.log(electron)
 
 var app = electron.app;  // Module to control application life.
 var BrowserWindow = electron.BrowserWindow;  // Module to create native browser window.
