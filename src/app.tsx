@@ -22,7 +22,6 @@ class Application extends React.Component<{}, {}> {
         // Log.overrideLog();
         let config = ConfigStore.getCurrentConfig();
         this.api = new TwitchAPI(config.authToken, config.clientId);
-        this.state = { activeTab: '1' }
 
         this.checkAuthentication()
     }

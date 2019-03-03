@@ -5,7 +5,7 @@
   "main": "main.js",
   "scripts": {
     "package": "electron-packager . lightstreamer --platform=win32 --arch=x64 --prune --out=.. icon=img/app-icon.ico --overwrite --ignore=\"(node_modules|src|vendor|typings)\"",
-    "build": "webpack",
+    "build": "webpack -p",
     "watch": "webpack --watch",
     "start": "electron main.js",
     "postinstall": "typings install"

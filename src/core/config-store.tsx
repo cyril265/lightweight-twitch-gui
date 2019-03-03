@@ -13,6 +13,7 @@ export module ConfigStore {
     let _config: AppConfig = loadConfig()
 
     try {
+        console.log(configDirPath)
         fs.mkdirSync(configDirPath);
     } catch (e) {
         //ignore
@@ -20,7 +21,7 @@ export module ConfigStore {
 
     export function updateConfig(config: AppConfig) {
         _config = config
-        fs.writeFile(configFileName, JSON.stringify(config, null, 2), 'utf8')
+        fs.writeFileSync(configFileName, JSON.stringify(config, null, 2), 'utf8')
     }
 
     export function getCurrentConfig(): AppConfig {

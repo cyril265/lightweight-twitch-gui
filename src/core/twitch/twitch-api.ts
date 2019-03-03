@@ -22,7 +22,7 @@ export class TwitchAPI {
     async getFollowedStreams(): Promise<Stream[]> {
         console.log("getfollowed")
         const followsIds = await this.getUserFollowsIds()
-        const requestUrl = "https://api.twitch.tv/helix/streams?" + followsIds.map(id => "user_id=" + id).join("&")
+        const requestUrl = "https://api.twitch.tv/helix/streams?first=100&" + followsIds.map(id => `user_id=${id}`).join("&")
 
         let response = await window.fetch(requestUrl, this.authOpts)
         this.checkResponse(response)
@@ -42,7 +42,7 @@ export class TwitchAPI {
     async getUserFollowsIds(): Promise<string[]> {
         const userId = await this.currentUserid
         console.log("userId", userId)
-        const response = await window.fetch(`https://api.twitch.tv/helix/users/follows?from_id=${userId}`, this.authOpts)
+        const response = await window.fetch(`https://api.twitch.tv/helix/users/follows?from_id=${userId}&first=100`, this.authOpts)
         this.checkResponse(response)
 
         let data = (await response.json()).data
@@ -92,7 +92,7 @@ export class TwitchAPI {
             let userId = await this.currentUserid
         } catch (e) {
             console.log("EXC", e);
-            if (e instanceof NotAuthorizedException) return false
+            if (e instanceof NotFoundException) return false
         }
         return true
     }
@@ -141,12 +141,15 @@ export class TwitchAPI {
                 game_name: stream.game
             }
         })
-        .filter(this.filterLiveStreams);
+            .filter(this.filterLiveStreams);
     }
 
     private checkResponse(response: Response): void {
         if (response.status === 401 || response.status === 403) {
             throw new NotAuthorizedException()
+        }
+        if (response.status === 400) {
+            throw new NotFoundException()
         }
         if (!response.ok) {
             console.log("Invalid api response", response)
@@ -160,4 +163,5 @@ class NotAuthorizedException {
 }
 class ApiException {
 }
-
+class NotFoundException {
+}

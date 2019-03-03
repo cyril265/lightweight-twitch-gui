@@ -6,7 +6,7 @@ export function authenticate():Promise<string> {
     let webContents = win.webContents;
 
     const promise:Promise<string> = new Promise((resolve) => {
-        webContents.on("did-get-redirect-request", (event, oldUrl:string, newUrl:string) => {
+        webContents.on("did-redirect-navigation", (event, newUrl:string) => {
             if (newUrl.indexOf('access_token') > 0) {
                 win.close()
 

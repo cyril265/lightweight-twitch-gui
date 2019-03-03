@@ -34,7 +34,6 @@ export class TopStreams extends React.Component<Props, State> {
     componentDidMount() {
         this.refreshStreams()
         this.props.api.getTopGames().then(topGames => {
-            console.log(topGames)
             return this.setState({ topGames: topGames });
         })
     }
