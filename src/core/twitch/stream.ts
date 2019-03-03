@@ -44,16 +44,19 @@ export interface Channel {
 }
 
 export interface Stream {
-    _id: number;
-    game: string;
-    is_playlist: boolean;
-    viewers: number;
-    created_at: string;
-    video_height: number;
-    average_fps: number;
-    _links: Link;
-    preview: Preview;
-    channel: Channel;
+    started_at: string
+    user_name: string
+    game_id: string
+    title: string
+    viewer_count: number
+    language: string
+    thumbnail_url: string
+    channel_url: string
+    type: string
+    id: string
+    medium_thumbnail: string
+    small_thumbnail: string
+    game_name: string
 }
 
 

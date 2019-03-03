@@ -1,36 +1,69 @@
-import {Stream} from './stream';
-import {Game} from './game';
+import { Game } from './game';
+import { Stream } from './stream';
 
 export class TwitchAPI {
 
     private authOpts: RequestInit
+    private currentUserid: Promise<string>
+    private gameMap: Promise<Map<string, string>>
+
 
     constructor(authToken: string, clientId: string) {
-        this.authOpts = {headers: {'Authorization': `OAuth ${authToken}`, 'Client-ID': clientId}}
+        this.authOpts = { headers: { 'Authorization': `Bearer ${authToken}`, 'Client-ID': clientId } }
+        this.currentUserid = this.getCurrentUserId()
+
+        this.gameMap = this.getTopGames().then(games => {
+            const gameMap = new Map()
+            games.forEach(game => gameMap.set(game.id, game.name))
+            return gameMap
+        })
     }
 
-    async getFollowedStreams(limit: number = 100): Promise<Stream[]> {
-        let response = await window.fetch('https://api.twitch.tv/kraken/streams/followed?' + 'limit=' + limit, this.authOpts)
+    async getFollowedStreams(): Promise<Stream[]> {
+        console.log("getfollowed")
+        const followsIds = await this.getUserFollowsIds()
+        const requestUrl = "https://api.twitch.tv/helix/streams?" + followsIds.map(id => "user_id=" + id).join("&")
+
+        let response = await window.fetch(requestUrl, this.authOpts)
         this.checkResponse(response)
 
-        let data = await response.json()
-        return this.filterPlaylistStreams(data.streams);
+        let streams = (await response.json()).data
+        return this.postProcessStreams(streams);
     }
+
+    async getCurrentUserId(): Promise<string> {
+        const response = await window.fetch('https://api.twitch.tv/helix/users', this.authOpts)
+        this.checkResponse(response)
+
+        let data = (await response.json()).data
+        return data[0].id
+    }
+
+    async getUserFollowsIds(): Promise<string[]> {
+        const userId = await this.currentUserid
+        console.log("userId", userId)
+        const response = await window.fetch(`https://api.twitch.tv/helix/users/follows?from_id=${userId}`, this.authOpts)
+        this.checkResponse(response)
+
+        let data = (await response.json()).data
+        return data.map(followedStream => followedStream.to_id)
+    }
+
 
     async getTopStreams(limit: number = 50): Promise<Stream[]> {
-        let response = await window.fetch(`https://api.twitch.tv/kraken/streams?limit=${limit}`, this.authOpts)
+        let response = await window.fetch(`https://api.twitch.tv/helix/streams?first=${limit}`, this.authOpts)
         this.checkResponse(response)
 
-        let data = await response.json()
-        return this.filterPlaylistStreams(data.streams);
+        let streams = (await response.json()).data
+        return this.postProcessStreams(streams);
     }
 
-    async getTopStreamsByGame(game: string, limit: number = 50): Promise<Stream[]> {
-        let response = await window.fetch(`https://api.twitch.tv/kraken/streams?game=${game}&limit=${limit}`, this.authOpts)
+    async getTopStreamsByGameId(game: string): Promise<Stream[]> {
+        let response = await window.fetch(`https://api.twitch.tv/helix/streams?game_id=${game}`, this.authOpts)
         this.checkResponse(response)
 
-        let data = await response.json()
-        return this.filterPlaylistStreams(data.streams);
+        let streams = (await response.json()).data
+        return this.postProcessStreams(streams);
     }
 
     async searchStreams(query: string, limit: number = 100): Promise<Stream[]> {
@@ -38,25 +71,25 @@ export class TwitchAPI {
         this.checkResponse(response)
 
         let data = await response.json()
-        return this.filterPlaylistStreams(data.streams);
+        return this.postProcessLegacyStreams(data.streams);
     }
 
-    private async filterPlaylistStreams(streams: Stream[]): Promise<Stream[]> {
-        return streams.filter(stream => !stream.is_playlist);
-    }
 
-    async getTopGames(limit: number = 50): Promise<Game[]> {
-        let response = await window.fetch(`https://api.twitch.tv/kraken/games/top?limit=${limit}`, this.authOpts)
-        this.checkResponse(response)
-        let data = await response.json()
-        return data.top.map(t => t.game);
+    async getTopGames(): Promise<Game[]> {
+        let responsePromise = await window.fetch(`https://api.twitch.tv/helix/games/top?first=100`, this.authOpts)
+        this.checkResponse(responsePromise)
+        let response = await responsePromise.json()
+
+        return response.data.map(function (game) {
+            return { id: game.id, name: game.name, boxArtUrl: game.box_art_url }
+        });
     }
 
     async isAuthValid() {
         console.log("auth valid called");
 
         try {
-            let streams = await this.getFollowedStreams(1);
+            let userId = await this.currentUserid
         } catch (e) {
             console.log("EXC", e);
             if (e instanceof NotAuthorizedException) return false
@@ -64,11 +97,59 @@ export class TwitchAPI {
         return true
     }
 
+    mapStream(stream: Stream, gameMap: Map<string, string>): Stream {
+        const medium_thumbnail = stream.thumbnail_url.replace("{height}", "113")
+            .replace("{width}", "200")
+        const small_thumbnail = stream.thumbnail_url.replace("{height}", "40")
+            .replace("{width}", "40")
+
+        return {
+            ...stream,
+            ...{
+                channel_url: 'https://www.twitch.tv/' + stream.user_name,
+                medium_thumbnail: medium_thumbnail,
+                small_thumbnail: small_thumbnail,
+                game_name: gameMap.get(stream.game_id)
+            }
+        }
+    }
+
+    private async postProcessStreams(streams: Stream[]): Promise<Stream[]> {
+        const gameMap = (await this.gameMap)
+
+        return streams
+            .map(stream => this.mapStream(stream, gameMap))
+            .filter(this.filterLiveStreams);
+    }
+
+    private filterLiveStreams = stream => stream.type == 'live'
+
+
+    private postProcessLegacyStreams(streams: any): Stream[] {
+        return streams.map(stream => {
+            return {
+                started_at: stream.created_at,
+                user_name: stream.channel.display_name,
+                title: stream.channel.status,
+                viewer_count: stream.viewers,
+                language: stream.channel.language,
+                medium_thumbnail: stream.preview.medium,
+                small_thumbnail: stream.preview.small,
+                channel_url: stream.channel.url,
+                type: stream.is_playlist ? 'playlist' : 'live',
+                id: stream._id,
+                game_name: stream.game
+            }
+        })
+        .filter(this.filterLiveStreams);
+    }
+
     private checkResponse(response: Response): void {
         if (response.status === 401 || response.status === 403) {
             throw new NotAuthorizedException()
         }
         if (!response.ok) {
+            console.log("Invalid api response", response)
             throw new ApiException()
         }
     }

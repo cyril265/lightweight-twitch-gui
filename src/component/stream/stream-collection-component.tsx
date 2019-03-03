@@ -11,8 +11,8 @@ export class StreamCollection extends React.Component<CollectionProps, {}> {
 
     render() {
         let streamList = this.props.streams
-            .sort((a, b) => b.viewers - a.viewers)
-            .map((stream) => <StreamComponent key={stream._id} stream={stream}/>);
+            .sort((a, b) => b.viewer_count - a.viewer_count)
+            .map((stream) => <StreamComponent key={stream.id} stream={stream}/>);
         return <div>{streamList}</div>
     }
 

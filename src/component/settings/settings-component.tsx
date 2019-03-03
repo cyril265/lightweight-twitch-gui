@@ -1,7 +1,7 @@
 import * as React from 'react';
-import {FormControl, FormGroup, Label, Checkbox, ControlLabel} from "react-bootstrap"
-import {AppConfig} from "core/app-config";
-import {ConfigStore} from "core/config-store";
+import { Form } from "react-bootstrap"
+import { AppConfig } from "core/app-config";
+import { ConfigStore } from "core/config-store";
 
 
 interface State {
@@ -12,7 +12,7 @@ interface Props {
 
 export class Settings extends React.Component<Props, State> {
 
-    state = {config: ConfigStore.getCurrentConfig()}
+    state = { config: ConfigStore.getCurrentConfig() }
 
     handleRefreshInterval = (event) => {
         let refreshInterval = Number(event.target.value)
@@ -60,54 +60,54 @@ export class Settings extends React.Component<Props, State> {
     render() {
         return (
             <form>
-                <FormGroup bsSize="small">
-                    <ControlLabel>Refresh interval (seconds)</ControlLabel>
-                    <FormControl className="form-control" type="text"
-                                 onChange={this.handleRefreshInterval}
-                                 value={this.state.config.refreshInterval}
-                                 placeholder="Refresh interval (seconds)"/>
-                </FormGroup>
+                <Form.Group>
+                    <Form.Label>Refresh interval (seconds)</Form.Label>
+                    <Form.Control className="form-control" type="text"
+                        onChange={this.handleRefreshInterval}
+                        defaultValue={this.state.config.refreshInterval + ""}
+                        placeholder="Refresh interval (seconds)" />
+                </Form.Group>
 
-                <FormGroup bsSize="small">
-                    <ControlLabel>Stream quality</ControlLabel>
-                    <FormControl componentClass="select" placeholder="Stream quality"
-                                 value={this.state.config.quality}
-                                 onChange={this.handleQuality}>
+                <Form.Group>
+                    <Form.Label>Stream quality</Form.Label>
+                    <Form.Control as="select"
+                        defaultValue={this.state.config.quality}
+                        onChange={this.handleQuality}>
                         <option value="Best">Best</option>
                         <option value="High">High</option>
                         <option value="Medium">Medium</option>
                         <option value="Low">Low</option>
-                    </FormControl>
-                </FormGroup>
+                    </Form.Control>
+                </Form.Group>
 
+                <Form.Check type="checkbox"
+                    checked={this.state.config.showNotifications} onChange={this.handleNotifications}
+                    label="Show notifications">
+                </Form.Check>
 
-                <Checkbox bsSize="small" checked={this.state.config.showNotifications} onChange={this.handleNotifications}>
-                    Show notifications
-                </Checkbox>
+                <Form.Group style={{paddingTop: "10px"}}>
+                    <Form.Label>Segment threads</Form.Label>
+                    <Form.Control type="text"
+                        onChange={this.handleSegmentThreads}
+                        defaultValue={this.state.config.segmentThreads + ""}
+                        placeholder="Segment threads" />
+                </Form.Group>
 
-                <FormGroup bsSize="small">
-                    <ControlLabel>Segment threads</ControlLabel>
-                    <FormControl type="text"
-                                 onChange={this.handleSegmentThreads}
-                                 value={this.state.config.segmentThreads}
-                                 placeholder="Segment threads"/>
-                </FormGroup>
+                <Form.Group>
+                    <Form.Label>Live edge</Form.Label>
+                    <Form.Control type="text"
+                        onChange={this.handleLiveEdge}
+                        defaultValue={this.state.config.liveEdge + ""}
+                        placeholder="Live edge" />
+                </Form.Group>
 
-                <FormGroup bsSize="small">
-                    <ControlLabel>Live edge</ControlLabel>
-                    <FormControl type="text"
-                                 onChange={this.handleLiveEdge}
-                                 value={this.state.config.liveEdge}
-                                 placeholder="Live edge"/>
-                </FormGroup>
-
-                <FormGroup bsSize="small">
-                    <ControlLabel>Path to player executable</ControlLabel>
-                    <FormControl type="text"
-                                 onChange={this.handlePlayerPath}
-                                 value={this.state.config.playerPath}
-                                 placeholder="Path to player executable. This overrides the livestreamer player setting"/>
-                </FormGroup>
+                <Form.Group>
+                    <Form.Label>Path to player executable</Form.Label>
+                    <Form.Control type="text"
+                        onChange={this.handlePlayerPath}
+                        defaultValue={this.state.config.playerPath}
+                        placeholder="Path to player executable. This overrides the livestreamer player setting" />
+                </Form.Group>
             </form>
         )
     }

@@ -18,10 +18,11 @@ class Application extends React.Component<{}, {}> {
     api: TwitchAPI;
 
     constructor() {
-        super()
-       // Log.overrideLog();
+        super({})
+        // Log.overrideLog();
         let config = ConfigStore.getCurrentConfig();
         this.api = new TwitchAPI(config.authToken, config.clientId);
+        this.state = { activeTab: '1' }
 
         this.checkAuthentication()
     }
@@ -42,17 +43,17 @@ class Application extends React.Component<{}, {}> {
         });
     }
 
-    render() {
+    render() {        
         return (
             <Tabs id='tabs' defaultActiveKey={1}>
                 <Tab eventKey={1} title={"Followed"}>
-                    <FollowedStreams api={this.api}/>
+                    <FollowedStreams api={this.api} />
                 </Tab>
                 <Tab eventKey={2} title={"Top"}>
                     <TopStreams api={this.api}></TopStreams>
                 </Tab>
                 <Tab eventKey={3} title={"Search"}>
-                    <StreamSearch api={this.api}/>
+                    <StreamSearch api={this.api} />
                 </Tab>
                 <Tab eventKey={4} title={"Settings"}>
                     <Settings/>

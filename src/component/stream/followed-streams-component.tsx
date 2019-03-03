@@ -52,7 +52,7 @@ export class FollowedStreams extends React.Component<Props, State> {
     showNotifications(updatedStreams: Array<Stream>) {
         let filtered = updatedStreams.filter(stream => {
             let index = this.state.streams.findIndex(oldStream => {
-                return stream.channel.name === oldStream.channel.name;
+                return stream.user_name === oldStream.user_name;
             });
             return index < 0;
         });
@@ -65,8 +65,8 @@ export class FollowedStreams extends React.Component<Props, State> {
     }
 
     createNotification(stream: Stream) {
-        const title = stream.channel.name + " has come online!";
-        new Notification(title, {body: stream.channel.status, icon: stream.preview.small})
+        const title = stream.user_name + " has come online!";
+        new Notification(title, {body: stream.title, icon: stream.small_thumbnail})
     }
 
 

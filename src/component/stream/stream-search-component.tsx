@@ -47,6 +47,8 @@ export class StreamSearch extends React.Component<Props, State> {
                 this.props.api.searchStreams(event.target.value)
                     .then(streams => {
                         this.setState({streams: streams, loading: false})
+                    }).catch(() => {
+                        this.setState({loading: false})
                     })
             }
         }
