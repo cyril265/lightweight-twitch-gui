@@ -1,28 +1,33 @@
 import * as ReactDOM from 'react-dom'
 import * as React from 'react'
-import {Tabs, Tab} from "react-bootstrap"
-import {authenticate} from 'authenticator'
+import { Tabs, Tab } from "react-bootstrap"
+import { authenticate } from 'authenticator'
 import '../vendor/css/bootstrap.min.css'
 import '../css/loading.css'
-import {TwitchAPI} from "./core/twitch/twitch-api";
-import {ConfigStore} from "./core/config-store";
-import {FollowedStreams} from "./component/stream/followed-streams-component";
-import {TopStreams} from "./component/stream/top-streams-component";
-import {StreamSearch} from "./component/stream/stream-search-component";
-import {Settings} from "./component/settings/settings-component";
-import {Log} from "./core/log";
+import { TwitchAPI } from "./core/twitch/twitch-api";
+import { ConfigStore } from "./core/config-store";
+import { FollowedStreams } from "./component/stream/followed-streams-component";
+import { TopStreams } from "./component/stream/top-streams-component";
+import { StreamSearch } from "./component/stream/stream-search-component";
+import { Settings } from "./component/settings/settings-component";
+import { Log } from "./core/log";
 
 
-class Application extends React.Component<{}, {}> {
+interface State {
+    selectedTab: number
+}
 
+class Application extends React.Component<{}, State> {
+
+    state = { selectedTab: 1 }
     api: TwitchAPI;
+
 
     constructor() {
         super({})
         // Log.overrideLog();
         let config = ConfigStore.getCurrentConfig();
         this.api = new TwitchAPI(config.authToken, config.clientId);
-
         this.checkAuthentication()
     }
 
@@ -42,27 +47,34 @@ class Application extends React.Component<{}, {}> {
         });
     }
 
-    render() {        
+    render() {
         return (
-            <Tabs id='tabs' defaultActiveKey={1}>
+            <Tabs id='tabs' defaultActiveKey={1} onSelect={this.handleTabChange}>
                 <Tab eventKey={1} title={"Followed"}>
                     <FollowedStreams api={this.api} />
                 </Tab>
                 <Tab eventKey={2} title={"Top"}>
-                    <TopStreams api={this.api}></TopStreams>
+                    {
+                        this.state.selectedTab == 2 &&
+                        <TopStreams api={this.api}></TopStreams>
+                    }
                 </Tab>
                 <Tab eventKey={3} title={"Search"}>
                     <StreamSearch api={this.api} />
                 </Tab>
                 <Tab eventKey={4} title={"Settings"}>
-                    <Settings/>
+                    <Settings />
                 </Tab>
             </Tabs>
         )
     }
 
+    handleTabChange = (key) => {
+        this.setState({ selectedTab: key })
+    }
+
 }
 
-ReactDOM.render(<Application/>, document.getElementById('app'));
+ReactDOM.render(<Application />, document.getElementById('app'));
 
 

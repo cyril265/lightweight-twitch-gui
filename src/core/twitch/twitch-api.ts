@@ -115,7 +115,16 @@ export class TwitchAPI {
     }
 
     private async postProcessStreams(streams: Stream[]): Promise<Stream[]> {
-        const gameMap = (await this.gameMap)
+        const gameMap = await this.gameMap
+        const missingGameIds = streams
+            .map(stream => stream.game_id)
+            .filter(gameId => gameId != undefined && gameId != null && gameId.length > 2)
+            .filter(gameId => !gameMap.has(gameId))
+        console.log(missingGameIds)
+        if (missingGameIds.length > 0) {
+            const missingGames = await this.getGamesByid(missingGameIds)
+            missingGames.forEach(game => gameMap.set(game.id, game.name))
+        }
 
         return streams
             .map(stream => this.mapStream(stream, gameMap))
@@ -124,6 +133,17 @@ export class TwitchAPI {
 
     private filterLiveStreams = stream => stream.type == 'live'
 
+    private async getGamesByid(gameIds): Promise<Game[]> {
+        let responsePromise = await window.fetch(
+            'https://api.twitch.tv/helix/games?' + gameIds.map(id => `id=${id}`).join("&"), this.authOpts
+        )
+        this.checkResponse(responsePromise)
+        let response = await responsePromise.json()
+
+        return response.data.map(function (game) {
+            return { id: game.id, name: game.name, boxArtUrl: game.box_art_url }
+        });
+    }
 
     private postProcessLegacyStreams(streams: any): Stream[] {
         return streams.map(stream => {
